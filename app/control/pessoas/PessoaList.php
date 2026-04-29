@@ -3,7 +3,7 @@
  * PessoaList
  *
  * @version    1.0
- * @package    erphouse
+ * @package    ong
  * @subpackage control
  * @author     Pablo Dall'Oglio
  * @copyright  Copyright (c) 2006 Adianti Solutions Ltd. (http://www.adianti.com.br)
@@ -26,45 +26,71 @@ class PessoaList extends TPage
     {
         parent::__construct();
         
-        $this->setDatabase('erphouse');            // defines the database
+        $this->setDatabase('ong');            // defines the database
         $this->setActiveRecord('Pessoa');   // defines the active record
-        $this->setDefaultOrder('id', 'asc');         // defines the default order
+        $this->setDefaultOrder('nome', 'asc');         // defines the default order
         $this->setLimit(10);
         // $this->setCriteria($criteria) // define a standard filter
 
         $this->addFilterField('id', '=', 'id'); // filterField, operator, formField
-        $this->addFilterField('nome_fantasia', 'like', 'nome_fantasia'); // filterField, operator, formField
-        $this->addFilterField('fone', 'like', 'fone'); // filterField, operator, formField
-        $this->addFilterField('email', 'like', 'email'); // filterField, operator, formField
-        $this->addFilterField('grupo_id', '=', 'grupo_id'); // filterField, operator, formField
+        $this->addFilterField('nome', 'like', 'nome'); // filterField, operator, formField
+        $this->addFilterField('bairro', 'like', 'bairro'); // filterField, operator, formField
+        $this->addFilterField('cidade_id', '=', 'cidade_id'); // filterField, operator, formField
+        $this->addFilterField('projeto_id', '=', 'projeto_id'); // filterField, operator, formField
+        $this->addFilterField('tipo', 'like', 'tipo'); // filterField, operator, formField
         
+       
+       
+       
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Pessoa');
-        $this->form->setFormTitle('Pessoa');
+        $this->form->setFormTitle('Beneficiários / Voluntários');
         
 
         // create the form fields
         $id = new TEntry('id');
-        $nome_fantasia = new TEntry('nome_fantasia');
-        $fone = new TEntry('fone');
-        $email = new TEntry('email');
-        $grupo_id = new TDBUniqueSearch('grupo_id', 'erphouse', 'Grupo', 'id', 'nome');
-        $grupo_id->setMinLength(0);
-
+        $nome = new TEntry('nome');        
+        $bairro = new TEntry('bairro');
+        $date_from = new TDate('date_from');
+        $date_to   = new TDate('date_to');
+        $tipo = new TRadioGroup('tipo');
+        
+        $cidade_id = new TDBUniqueSearch('cidade_id', 'ong', 'Cidade', 'id', 'nome');
+        $cidade_id->setMinLength(3);
+        $cidade_id->setMask('{nome} ({estado->uf})');
+        
+        $projeto_id = new TDBUniqueSearch('projeto_id', 'ong', 'Projeto', 'id', 'nome');
+        $projeto_id->setMinLength(3);
+        $projeto_id->setMask('{nome} ({id})');
+        
+        $tipo->addItems( ['B' => 'Beneficiários', 'V' => 'Voluntários', '' => 'Ambos'] );
+        $tipo->setLayout('horizontal');
+        
+        $date_from->setMask('dd/mm/yyyy');
+        $date_from->setDatabaseMask('yyyy-mm-dd');
+        
+        $date_to->setMask('dd/mm/yyyy');
+        $date_to->setDatabaseMask('yyyy-mm-dd');
+        
         // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
-        $this->form->addFields( [ new TLabel('Nome Fantasia') ], [ $nome_fantasia ] );
-        $this->form->addFields( [ new TLabel('Fone') ], [ $fone ] );
-        $this->form->addFields( [ new TLabel('Email') ], [ $email ] );
-        $this->form->addFields( [ new TLabel('Grupo') ], [ $grupo_id ] );
-
+        $this->form->addFields( [ new TLabel('Id') ], [ $id ], [ new TLabel('Nome') ], [ $nome ] );        
+        $this->form->addFields( [new TLabel('Dt Cadastro (de)')], [$date_from],
+                                [new TLabel('Dt Cadastro (até)')],   [$date_to] );
+        $this->form->addFields( [ new TLabel('Tipo') ], [ $tipo ], [ new TLabel('Projeto') ], [ $projeto_id ] );    
+        $this->form->addFields(
+            [ new TLabel('Bairro') ], [ $bairro ],
+            [ new TLabel('Cidade') ], [ $cidade_id ]
+        );        
 
         // set sizes
         $id->setSize('100%');
-        $nome_fantasia->setSize('100%');
-        $fone->setSize('100%');
-        $email->setSize('100%');
-        $grupo_id->setSize('100%');
+        $date_from->setSize('100%');
+        $date_to->setSize('100%');
+        $nome->setSize('100%');
+        $tipo->setSize('100%');
+        $bairro->setSize('100%');
+        $cidade_id->setSize('100%');   
+        $projeto_id->setSize('100%');           
 
         
         // keep the form filled during navigation with session data
@@ -84,24 +110,29 @@ class PessoaList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_nome_fantasia = new TDataGridColumn('nome_fantasia', 'Nome Fantasia', 'left');
-        $column_fone = new TDataGridColumn('fone', 'Fone', 'left');
-        $column_email = new TDataGridColumn('email', 'Email', 'left');
-        $column_grupo_id = new TDataGridColumn('grupo->nome', 'Grupo', 'left');
+        $column_cpf = new TDataGridColumn('cpf', 'CPF', 'left');
+        $column_nis = new TDataGridColumn('nis', 'NIS', 'left');
+        $column_nome = new TDataGridColumn('nome', 'Nome', 'left');
+        $column_bairro = new TDataGridColumn('bairro', 'Bairro', 'left');
+        $column_cidade = new TDataGridColumn('cidade->nome', 'Cidade', 'left');
+        $column_fone = new TDataGridColumn('fone1', 'Fone', 'left');
+        $column_tipo = new TDataGridColumn('tipo', 'Tipo', 'left');
         
         $column_fone->enableAutoHide(500);
-        $column_email->enableAutoHide(500);
-        $column_grupo_id->enableAutoHide(500);
+        $column_bairro->enableAutoHide(500);        
         
         // add the columns to the DataGrid
         $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_nome_fantasia);
+        $this->datagrid->addColumn($column_tipo);
+        $this->datagrid->addColumn($column_cpf);
+        $this->datagrid->addColumn($column_nis);        
+        $this->datagrid->addColumn($column_nome);
+        $this->datagrid->addColumn($column_bairro);
+        $this->datagrid->addColumn($column_cidade);
         $this->datagrid->addColumn($column_fone);
-        $this->datagrid->addColumn($column_email);
-        $this->datagrid->addColumn($column_grupo_id);
         
         $column_id->setAction(new TAction([$this, 'onReload']), ['order' => 'id']);
-        $column_nome_fantasia->setAction(new TAction([$this, 'onReload']), ['order' => 'nome_fantasia']);
+        $column_nome->setAction(new TAction([$this, 'onReload']), ['order' => 'nome']);
 
         
         $action1 = new TDataGridAction(['PessoaFormView', 'onEdit'], ['id'=>'{id}', 'register_state' => 'false']);

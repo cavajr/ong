@@ -18,41 +18,39 @@ class Pessoa extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
+        parent::addAttribute('cpf');
         parent::addAttribute('nome');
-        parent::addAttribute('nome_fantasia');
         parent::addAttribute('tipo');
-        parent::addAttribute('codigo_nacional');
-        parent::addAttribute('codigo_estadual');
-        parent::addAttribute('codigo_municipal');
-        parent::addAttribute('fone');
+        parent::addAttribute('rg');
+        parent::addAttribute('nis');
+        parent::addAttribute('idade');
+        parent::addAttribute('estado_civil_id');
+        parent::addAttribute('sexo_id');
+        parent::addAttribute('escolariedade_id');
+        parent::addAttribute('projeto_id');
+        parent::addAttribute('profissao');
+        parent::addAttribute('indicado_por');
+        parent::addAttribute('fonte_renda');
+        parent::addAttribute('renda_mensal');
+        parent::addAttribute('tipo_moradia');
+        parent::addAttribute('moradores');
+        parent::addAttribute('tipo_atendimento');
+        parent::addAttribute('estrutura_moradia');
+        parent::addAttribute('fone1');
+        parent::addAttribute('fone2');
         parent::addAttribute('email');
-        parent::addAttribute('observacao');
         parent::addAttribute('cep');
-        parent::addAttribute('logradouro');
-        parent::addAttribute('numero');
-        parent::addAttribute('complemento');
+        parent::addAttribute('endereco');
+        parent::addAttribute('numero');        
         parent::addAttribute('bairro');
         parent::addAttribute('cidade_id');
         parent::addAttribute('created_at');
-        parent::addAttribute('updated_at');
-        parent::addAttribute('grupo_id');
-    }
+        parent::addAttribute('updated_at');        
+    }       
     
     public function get_cidade()
     {
         return Cidade::find($this->cidade_id);
-    }
+    }       
     
-    public function get_grupo()
-    {
-        return Grupo::find($this->grupo_id);
-    }
-    
-    public function delete($id = null)
-    {
-        $id = isset($id) ? $id : $this->id;
-        
-        PessoaPapel::where('pessoa_id', '=', $this->id)->delete();
-        parent::delete($id);
-    }
 }

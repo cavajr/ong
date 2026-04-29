@@ -3,7 +3,7 @@
  * PessoaFormView
  *
  * @version    1.0
- * @package    erphouse
+ * @package    ong
  * @subpackage control
  * @author     Pablo Dall'Oglio
  * @copyright  Copyright (c) 2006 Adianti Solutions Ltd. (http://www.adianti.com.br)
@@ -25,7 +25,7 @@ class PessoaFormView extends TPage
         parent::setTargetContainer('adianti_right_panel');
 
         $this->form = new BootstrapFormBuilder('form_PessoaView');
-        $this->form->setFormTitle('Pessoa');
+        $this->form->setFormTitle('Beneficiário / Voluntário');
         $this->form->setColumnClasses(2, ['col-sm-3', 'col-sm-9']);
         
         $dropdown = new TDropDown('Opções', 'fa:th');
@@ -53,21 +53,17 @@ class PessoaFormView extends TPage
     {
         try
         {
-            TTransaction::open('erphouse');
+            TTransaction::open('ong');
             $master_object = new Pessoa($param['key']);
             
             $label_id = new TLabel('Id:');
-            $label_nome_fantasia = new TLabel('Fantasia:');
-            $label_codigo_nacional = new TLabel('CPF/CNPJ:');
             $label_fone = new TLabel('Fone:');
             $label_email = new TLabel('Email:');
             $label_cidade = new TLabel('Local:');
             $label_created_at = new TLabel('Criado em:');
             $label_updated_at = new TLabel('Alterado em:');
             
-            $text_id  = new TTextDisplay($master_object->id);
-            $text_nome_fantasia  = new TTextDisplay($master_object->nome_fantasia);
-            $text_codigo_nacional  = new TTextDisplay($master_object->codigo_nacional);
+            $text_id  = new TTextDisplay($master_object->id);            
             $text_fone  = new THyperLink('<i class="fa fa-phone-square-alt"></i> '.$master_object->fone, 'callto:'.$master_object->fone, '#007bff', '12px', '');
             $text_email  = new THyperLink('<i class="fa fa-envelope"></i> ' . $master_object->email, 'https://mail.google.com/mail/u/0/?view=cm&fs=1&to='.$master_object->email.'&tf=1', '#007bff', '12px', '');
             $link_maps = 'https://www.google.com/maps/search/' . $master_object->logradouro . ',' . 
@@ -80,8 +76,8 @@ class PessoaFormView extends TPage
             $text_updated_at  = new TTextDisplay(TDateTime::convertToMask($master_object->updated_at, 'yyyy-mm-dd hh:ii:ss', 'dd/mm/yyyy hh:ii:ss'));
             
             $this->form->addFields([$label_id],[$text_id]);
-            $this->form->addFields([$label_nome_fantasia],[$text_nome_fantasia]);
-            $this->form->addFields([$label_codigo_nacional],[$text_codigo_nacional]);
+            
+            
             $this->form->addFields([$label_fone],[$text_fone]);
             $this->form->addFields([$label_email],[$text_email]);
             $this->form->addFields([$label_cidade],[$text_cidade]);
@@ -297,7 +293,7 @@ class PessoaFormView extends TPage
         {
             $this->onEdit($param);
             
-            TTransaction::open('erphouse');
+            TTransaction::open('ong');
             $pessoa = new Pessoa($param['key']);
             
             $replaces = $pessoa->toArray();

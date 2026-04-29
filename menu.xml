@@ -26,6 +26,11 @@
         </menu>
     </menuitem>
 
+    <menuitem label="Beneficiários / Voluntários">
+        <icon>fas:users fa-fw</icon>
+        <action>PessoaList</action>        
+    </menuitem>
+
     <menuitem label='_t{Administration}'>
         <icon>fas:sliders fa-fw</icon>
         <menu>
