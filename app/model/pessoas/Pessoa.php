@@ -20,7 +20,7 @@ class Pessoa extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('cpf');
         parent::addAttribute('nome');
-        parent::addAttribute('tipo');
+        parent::addAttribute('tipo_id');
         parent::addAttribute('rg');
         parent::addAttribute('nis');
         parent::addAttribute('idade');
@@ -52,5 +52,7 @@ class Pessoa extends TRecord
     {
         return Cidade::find($this->cidade_id);
     }       
+    
+ 
     
 }

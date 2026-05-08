@@ -124,6 +124,78 @@ INSERT INTO `estado_civil` VALUES (2,'Casado'),(3,'Divorciado'),(1,'Solteiro'),(
 UNLOCK TABLES;
 
 --
+-- Table structure for table `estruturamoradia`
+--
+
+DROP TABLE IF EXISTS `estruturamoradia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `estruturamoradia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estruturamoradia`
+--
+
+LOCK TABLES `estruturamoradia` WRITE;
+/*!40000 ALTER TABLE `estruturamoradia` DISABLE KEYS */;
+/*!40000 ALTER TABLE `estruturamoradia` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `fonterenda`
+--
+
+DROP TABLE IF EXISTS `fonterenda`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `fonterenda` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `fonterenda`
+--
+
+LOCK TABLES `fonterenda` WRITE;
+/*!40000 ALTER TABLE `fonterenda` DISABLE KEYS */;
+/*!40000 ALTER TABLE `fonterenda` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `moradia`
+--
+
+DROP TABLE IF EXISTS `moradia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `moradia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `moradia`
+--
+
+LOCK TABLES `moradia` WRITE;
+/*!40000 ALTER TABLE `moradia` DISABLE KEYS */;
+/*!40000 ALTER TABLE `moradia` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pessoa`
 --
 
@@ -132,7 +204,7 @@ DROP TABLE IF EXISTS `pessoa`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `pessoa` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `tipo` char(1) NOT NULL,
+  `tipo_id` int(11) NOT NULL,
   `cpf` char(14) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `rg` varchar(20) DEFAULT NULL,
@@ -147,17 +219,20 @@ CREATE TABLE `pessoa` (
   `sexo_id` int(11) NOT NULL,
   `escolariedade_id` int(11) NOT NULL,
   `profissao` varchar(100) DEFAULT NULL,
-  `telefone1` varchar(20) DEFAULT NULL,
-  `telefone2` varchar(20) DEFAULT NULL,
+  `fone1` varchar(20) DEFAULT NULL,
+  `fone2` varchar(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `projeto_id` int(11) NOT NULL,
   `indicado_por` varchar(100) DEFAULT NULL,
-  `fonte_renda` varchar(50) DEFAULT NULL,
-  `renda_mensal` varchar(50) DEFAULT NULL,
-  `tipo_moradia` varchar(30) DEFAULT NULL,
+  `fonterenda_id` int(11) DEFAULT NULL,
+  `rendamensal_id` int(11) DEFAULT NULL,
+  `moradia_id` int(11) DEFAULT NULL,
   `moradores` tinyint(4) DEFAULT NULL,
-  `tipo_atendimento` varchar(50) DEFAULT NULL,
-  `estrutura_moradia` varchar(25) DEFAULT NULL,
+  `tipoatendimento_id` int(11) DEFAULT NULL,
+  `estruturamoradia_id` int(11) DEFAULT NULL,
+  `cep` varchar(8) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cpf` (`cpf`),
   KEY `cidade_id` (`cidade_id`),
@@ -167,12 +242,22 @@ CREATE TABLE `pessoa` (
   KEY `escolariedade_id` (`escolariedade_id`),
   KEY `projeto_id` (`projeto_id`),
   KEY `beneficiario_idx1` (`nome`),
+  KEY `fonterenda_id` (`fonterenda_id`),
+  KEY `rendamensal_id` (`rendamensal_id`),
+  KEY `moradia_id` (`moradia_id`),
+  KEY `tipoatendimento_id` (`tipoatendimento_id`),
+  KEY `estruturamoradia_id` (`estruturamoradia_id`),
   CONSTRAINT `beneficiario_fk1` FOREIGN KEY (`cidade_id`) REFERENCES `cidade` (`id`),
   CONSTRAINT `beneficiario_fk2` FOREIGN KEY (`estado_id`) REFERENCES `estado` (`id`),
   CONSTRAINT `beneficiario_fk3` FOREIGN KEY (`estado_civil_id`) REFERENCES `estado_civil` (`id`),
   CONSTRAINT `beneficiario_fk4` FOREIGN KEY (`sexo_id`) REFERENCES `sexo` (`id`),
   CONSTRAINT `beneficiario_fk5` FOREIGN KEY (`escolariedade_id`) REFERENCES `escolariedade` (`id`),
-  CONSTRAINT `beneficiario_fk6` FOREIGN KEY (`projeto_id`) REFERENCES `projeto` (`id`)
+  CONSTRAINT `beneficiario_fk6` FOREIGN KEY (`projeto_id`) REFERENCES `projeto` (`id`),
+  CONSTRAINT `pessoa_fk1` FOREIGN KEY (`fonterenda_id`) REFERENCES `fonterenda` (`id`),
+  CONSTRAINT `pessoa_fk2` FOREIGN KEY (`rendamensal_id`) REFERENCES `rendamensal` (`id`),
+  CONSTRAINT `pessoa_fk3` FOREIGN KEY (`moradia_id`) REFERENCES `moradia` (`id`),
+  CONSTRAINT `pessoa_fk4` FOREIGN KEY (`tipoatendimento_id`) REFERENCES `tipoatendimento` (`id`),
+  CONSTRAINT `pessoa_fk5` FOREIGN KEY (`estruturamoradia_id`) REFERENCES `estruturamoradia` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 PACK_KEYS=0;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -207,6 +292,30 @@ CREATE TABLE `projeto` (
 LOCK TABLES `projeto` WRITE;
 /*!40000 ALTER TABLE `projeto` DISABLE KEYS */;
 /*!40000 ALTER TABLE `projeto` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `rendamensal`
+--
+
+DROP TABLE IF EXISTS `rendamensal`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `rendamensal` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `rendamensal`
+--
+
+LOCK TABLES `rendamensal` WRITE;
+/*!40000 ALTER TABLE `rendamensal` DISABLE KEYS */;
+/*!40000 ALTER TABLE `rendamensal` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -267,7 +376,7 @@ CREATE TABLE `system_access_log` (
 
 LOCK TABLES `system_access_log` WRITE;
 /*!40000 ALTER TABLE `system_access_log` DISABLE KEYS */;
-INSERT INTO `system_access_log` VALUES (1,'69d875762b9b4af363ade7aa25125d07','admin','2026-04-28 11:40:30','2026','04','28','2026-04-28 11:46:23','N','::1',NULL),(2,'6c425435a1fe895e17ff9694baf24a48','admin','2026-04-28 11:46:52','2026','04','28','2026-04-28 11:52:43','N','::1',NULL),(3,'013e7710d4a6ee1569eff48ea72f6def','admin','2026-04-28 11:55:00','2026','04','28','2026-04-28 11:57:16','N','::1',NULL),(4,'4c68e7f9032fb34c6a381a3d7135d5a7','admin','2026-04-28 12:11:59','2026','04','28','2026-04-28 12:20:08','N','::1',NULL),(5,'fb309fead6b75468ea80e2a1eca65810','admin','2026-04-28 12:20:12','2026','04','28','2026-04-28 12:58:31','N','::1',NULL),(6,'65302a8c95d8a715f81dfd9a1e994977','admin','2026-04-28 13:04:25','2026','04','28',NULL,'N','::1',NULL);
+INSERT INTO `system_access_log` VALUES (1,'69d875762b9b4af363ade7aa25125d07','admin','2026-04-28 11:40:30','2026','04','28','2026-04-28 11:46:23','N','::1',NULL),(2,'6c425435a1fe895e17ff9694baf24a48','admin','2026-04-28 11:46:52','2026','04','28','2026-04-28 11:52:43','N','::1',NULL),(3,'013e7710d4a6ee1569eff48ea72f6def','admin','2026-04-28 11:55:00','2026','04','28','2026-04-28 11:57:16','N','::1',NULL),(4,'4c68e7f9032fb34c6a381a3d7135d5a7','admin','2026-04-28 12:11:59','2026','04','28','2026-04-28 12:20:08','N','::1',NULL),(5,'fb309fead6b75468ea80e2a1eca65810','admin','2026-04-28 12:20:12','2026','04','28','2026-04-28 12:58:31','N','::1',NULL),(6,'65302a8c95d8a715f81dfd9a1e994977','admin','2026-04-28 13:04:25','2026','04','28',NULL,'N','::1',NULL),(7,'5c99e8a26f5b9790aac1769e1f8f1f4c','admin','2026-04-28 13:42:43','2026','04','28','2026-04-28 13:43:16','N','::1',NULL),(8,'fa3f6cc85e563eaa5555fd75bb08c252','admin','2026-04-28 14:31:25','2026','04','28',NULL,'N','::1',NULL),(9,'ee63d04528e0b8ec786dadafd9e5a144','admin','2026-04-29 09:38:16','2026','04','29',NULL,'N','::1',NULL),(10,'99329c7437515db5a4c555b33984769b','admin','2026-05-08 09:41:33','2026','05','08',NULL,'N','::1',NULL);
 /*!40000 ALTER TABLE `system_access_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -615,7 +724,7 @@ CREATE TABLE `system_group_program` (
 
 LOCK TABLES `system_group_program` WRITE;
 /*!40000 ALTER TABLE `system_group_program` DISABLE KEYS */;
-INSERT INTO `system_group_program` VALUES (1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,1,5),(6,1,6),(7,1,7),(8,1,8),(9,1,9),(10,1,10),(11,1,11),(12,1,12),(13,1,13),(14,1,14),(15,1,15),(16,1,16),(17,1,17),(18,1,18),(19,1,19),(20,1,20),(21,1,21),(22,1,22),(23,1,23),(24,1,24),(25,1,25),(26,1,26),(27,1,27),(28,1,28),(29,2,29),(30,2,30),(31,2,31),(32,2,32),(33,2,33),(34,2,34),(35,2,35),(36,2,36),(37,2,37),(38,1,38),(39,1,39),(40,1,40),(41,1,41),(42,1,42),(43,1,43),(44,1,44),(45,1,45),(46,2,46),(47,2,47),(48,2,48),(49,2,49),(50,2,50),(51,2,51),(52,2,52),(53,2,53),(54,2,54),(55,2,55),(56,2,56),(57,2,57),(58,2,58),(59,2,59),(60,2,60),(61,2,61),(62,2,62),(63,2,63),(64,2,64),(65,1,65),(66,1,66),(67,1,67),(68,1,68),(69,1,69),(70,1,70),(71,1,71),(72,1,72),(73,1,73),(74,1,74);
+INSERT INTO `system_group_program` VALUES (1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,1,5),(6,1,6),(7,1,7),(8,1,8),(9,1,9),(10,1,10),(11,1,11),(12,1,12),(13,1,13),(14,1,14),(15,1,15),(16,1,16),(17,1,17),(18,1,18),(19,1,19),(20,1,20),(21,1,21),(22,1,22),(23,1,23),(24,1,24),(25,1,25),(26,1,26),(27,1,27),(28,1,28),(29,2,29),(30,2,30),(31,2,31),(32,2,32),(33,2,33),(34,2,34),(35,2,35),(36,2,36),(37,2,37),(38,1,38),(39,1,39),(40,1,40),(41,1,41),(42,1,42),(43,1,43),(44,1,44),(45,1,45),(46,2,46),(47,2,47),(48,2,48),(49,2,49),(50,2,50),(51,2,51),(52,2,52),(53,2,53),(54,2,54),(55,2,55),(56,2,56),(57,2,57),(58,2,58),(59,2,59),(60,2,60),(61,2,61),(62,2,62),(63,2,63),(64,2,64),(65,1,65),(66,1,66),(67,1,67),(68,1,68),(69,1,69),(70,1,70),(71,1,71),(72,1,72),(73,1,73),(74,1,74),(75,1,75),(76,1,76),(77,1,77);
 /*!40000 ALTER TABLE `system_group_program` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -892,7 +1001,7 @@ CREATE TABLE `system_program` (
 
 LOCK TABLES `system_program` WRITE;
 /*!40000 ALTER TABLE `system_program` DISABLE KEYS */;
-INSERT INTO `system_program` VALUES (1,'System Administration Dashboard','SystemAdministrationDashboard'),(2,'System Program Form','SystemProgramForm'),(3,'System Program List','SystemProgramList'),(4,'System Group Form','SystemGroupForm'),(5,'System Group List','SystemGroupList'),(6,'System Unit Form','SystemUnitForm'),(7,'System Unit List','SystemUnitList'),(8,'System Role Form','SystemRoleForm'),(9,'System Role List','SystemRoleList'),(10,'System User Form','SystemUserForm'),(11,'System User List','SystemUserList'),(12,'System Preference form','SystemPreferenceForm'),(13,'System Log Dashboard','SystemLogDashboard'),(14,'System Access Log','SystemAccessLogList'),(15,'System ChangeLog View','SystemChangeLogView'),(16,'System Sql Log','SystemSqlLogList'),(17,'System Request Log','SystemRequestLogList'),(18,'System Request Log View','SystemRequestLogView'),(19,'System PHP Error','SystemPHPErrorLogView'),(20,'System Session vars','SystemSessionVarsView'),(21,'System Database Browser','SystemDatabaseExplorer'),(22,'System Table List','SystemTableList'),(23,'System Data Browser','SystemDataBrowser'),(24,'System SQL Panel','SystemSQLPanel'),(25,'System Modules','SystemModulesCheckView'),(26,'System files diff','SystemFilesDiff'),(27,'System Information','SystemInformationView'),(28,'System PHP Info','SystemPHPInfoView'),(29,'Common Page','CommonPage'),(30,'Welcome View','WelcomeView'),(31,'Welcome dashboard','WelcomeDashboardView'),(32,'System Profile View','SystemProfileView'),(33,'System Profile Form','SystemProfileForm'),(34,'System Notification List','SystemNotificationList'),(35,'System Notification Form View','SystemNotificationFormView'),(36,'System Support form','SystemSupportForm'),(37,'System Profile 2FA Form','SystemProfile2FAForm'),(38,'System Wiki list','SystemWikiList'),(39,'System Wiki form','SystemWikiForm'),(40,'System Wiki page picker','SystemWikiPagePicker'),(41,'System Post list','SystemPostList'),(42,'System Post form','SystemPostForm'),(43,'System schedule list','SystemScheduleList'),(44,'System schedule form','SystemScheduleForm'),(45,'System schedule log','SystemScheduleLogList'),(46,'System Message Form','SystemMessageForm'),(47,'System Message List','SystemMessageList'),(48,'System Message Form View','SystemMessageFormView'),(49,'System Documents','SystemDriveList'),(50,'System Folder form','SystemFolderForm'),(51,'System Share folder','SystemFolderShareForm'),(52,'System Share document','SystemDocumentShareForm'),(53,'System Document properties','SystemDocumentFormWindow'),(54,'System Folder properties','SystemFolderFormView'),(55,'System Document upload','SystemDriveDocumentUploadForm'),(56,'Post View list','SystemPostFeedView'),(57,'Post Comment form','SystemPostCommentForm'),(58,'Post Comment list','SystemPostCommentList'),(59,'System Wiki search','SystemWikiSearchList'),(60,'System Wiki view','SystemWikiView'),(61,'System Message Tag form','SystemMessageTagForm'),(62,'System Contacts list','SystemContactsList'),(63,'Text document editor','SystemTextDocumentEditor'),(64,'System document create form','SystemDriveDocumentCreateForm'),(65,'Listagem de Cidades','CidadeList'),(66,'Formulário de Cidade','CidadeForm'),(67,'Listagem de Estados','EstadoList'),(68,'Formulário de Estado','EstadoForm'),(69,'Listagem de Escolariedade','EscolariedadeList'),(70,'Formulario de Escolariedade','EscolariedadeForm'),(71,'Formulario de Estado Civil','EstadoCivilForm'),(72,'Listagem de Estado Civil','EstadoCivilList'),(73,'Listagem de Sexos','SexoList'),(74,'Formulário de Sexo','SexoForm');
+INSERT INTO `system_program` VALUES (1,'System Administration Dashboard','SystemAdministrationDashboard'),(2,'System Program Form','SystemProgramForm'),(3,'System Program List','SystemProgramList'),(4,'System Group Form','SystemGroupForm'),(5,'System Group List','SystemGroupList'),(6,'System Unit Form','SystemUnitForm'),(7,'System Unit List','SystemUnitList'),(8,'System Role Form','SystemRoleForm'),(9,'System Role List','SystemRoleList'),(10,'System User Form','SystemUserForm'),(11,'System User List','SystemUserList'),(12,'System Preference form','SystemPreferenceForm'),(13,'System Log Dashboard','SystemLogDashboard'),(14,'System Access Log','SystemAccessLogList'),(15,'System ChangeLog View','SystemChangeLogView'),(16,'System Sql Log','SystemSqlLogList'),(17,'System Request Log','SystemRequestLogList'),(18,'System Request Log View','SystemRequestLogView'),(19,'System PHP Error','SystemPHPErrorLogView'),(20,'System Session vars','SystemSessionVarsView'),(21,'System Database Browser','SystemDatabaseExplorer'),(22,'System Table List','SystemTableList'),(23,'System Data Browser','SystemDataBrowser'),(24,'System SQL Panel','SystemSQLPanel'),(25,'System Modules','SystemModulesCheckView'),(26,'System files diff','SystemFilesDiff'),(27,'System Information','SystemInformationView'),(28,'System PHP Info','SystemPHPInfoView'),(29,'Common Page','CommonPage'),(30,'Welcome View','WelcomeView'),(31,'Welcome dashboard','WelcomeDashboardView'),(32,'System Profile View','SystemProfileView'),(33,'System Profile Form','SystemProfileForm'),(34,'System Notification List','SystemNotificationList'),(35,'System Notification Form View','SystemNotificationFormView'),(36,'System Support form','SystemSupportForm'),(37,'System Profile 2FA Form','SystemProfile2FAForm'),(38,'System Wiki list','SystemWikiList'),(39,'System Wiki form','SystemWikiForm'),(40,'System Wiki page picker','SystemWikiPagePicker'),(41,'System Post list','SystemPostList'),(42,'System Post form','SystemPostForm'),(43,'System schedule list','SystemScheduleList'),(44,'System schedule form','SystemScheduleForm'),(45,'System schedule log','SystemScheduleLogList'),(46,'System Message Form','SystemMessageForm'),(47,'System Message List','SystemMessageList'),(48,'System Message Form View','SystemMessageFormView'),(49,'System Documents','SystemDriveList'),(50,'System Folder form','SystemFolderForm'),(51,'System Share folder','SystemFolderShareForm'),(52,'System Share document','SystemDocumentShareForm'),(53,'System Document properties','SystemDocumentFormWindow'),(54,'System Folder properties','SystemFolderFormView'),(55,'System Document upload','SystemDriveDocumentUploadForm'),(56,'Post View list','SystemPostFeedView'),(57,'Post Comment form','SystemPostCommentForm'),(58,'Post Comment list','SystemPostCommentList'),(59,'System Wiki search','SystemWikiSearchList'),(60,'System Wiki view','SystemWikiView'),(61,'System Message Tag form','SystemMessageTagForm'),(62,'System Contacts list','SystemContactsList'),(63,'Text document editor','SystemTextDocumentEditor'),(64,'System document create form','SystemDriveDocumentCreateForm'),(65,'Listagem de Cidades','CidadeList'),(66,'Formulário de Cidade','CidadeForm'),(67,'Listagem de Estados','EstadoList'),(68,'Formulário de Estado','EstadoForm'),(69,'Listagem de Escolariedade','EscolariedadeList'),(70,'Formulario de Escolariedade','EscolariedadeForm'),(71,'Formulario de Estado Civil','EstadoCivilForm'),(72,'Listagem de Estado Civil','EstadoCivilList'),(73,'Listagem de Sexos','SexoList'),(74,'Formulário de Sexo','SexoForm'),(75,'Listagem de Pessoa','PessoaList'),(76,'Formulário de Pessoa','PessoaForm'),(77,'Form View Pessoa ','PessoaFormView');
 /*!40000 ALTER TABLE `system_program` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1426,6 +1535,55 @@ LOCK TABLES `system_wiki_tag` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `tipo`
+--
+
+DROP TABLE IF EXISTS `tipo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tipo`
+--
+
+LOCK TABLES `tipo` WRITE;
+/*!40000 ALTER TABLE `tipo` DISABLE KEYS */;
+INSERT INTO `tipo` VALUES (1,'BENEFICIÁRIO'),(2,'VOLUNTÁRIO');
+/*!40000 ALTER TABLE `tipo` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tipoatendimento`
+--
+
+DROP TABLE IF EXISTS `tipoatendimento`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tipoatendimento` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `nome` (`nome`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tipoatendimento`
+--
+
+LOCK TABLES `tipoatendimento` WRITE;
+/*!40000 ALTER TABLE `tipoatendimento` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tipoatendimento` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'ong'
 --
 
@@ -1442,4 +1600,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-28 13:14:40
+-- Dump completed on 2026-05-08 12:36:09

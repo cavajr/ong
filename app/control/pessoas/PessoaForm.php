@@ -35,11 +35,13 @@ class PessoaForm extends TWindow
         $id = new TEntry('id');
         $nome = new TEntry('nome');        
         $fone1 = new TEntry('fone1');
+        $fone2 = new TEntry('fone2');
         $email = new TEntry('email');
         $cep = new TEntry('cep');
         $endereco = new TEntry('endereco');
         $numero = new TEntry('numero');        
         $bairro = new TEntry('bairro');
+        $tipo_id = new TDBCombo('tipo_id', 'ong', 'Tipo', 'id', 'nome');
         
         $filter = new TCriteria;
         $filter->add(new TFilter('id', '<', '0'));
@@ -53,30 +55,36 @@ class PessoaForm extends TWindow
         $estado_id->enableSearch();
         
         // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
+        $this->form->addFields( [ new TLabel('Id') ], [ $id ],  [ new TLabel('Tipo') ], [ $tipo_id ]);
         $this->form->addFields( [ new TLabel('Nome') ], [ $nome ] );
-        $this->form->addFields( [ new TLabel('Fone') ], [ $fone1 ], [ new TLabel('Email') ], [ $email ] );
+        $this->form->addFields( [ new TLabel('Fone1') ], [ $fone1 ], [ new TLabel('Fone2') ], [ $fone2 ] );
+        $this->form->addFields( [ new TLabel('E-mail') ], [ $email ] );
         
         $this->form->addContent( [new TFormSeparator('Endereço')]);
         $this->form->addFields( [ new TLabel('Cep') ], [ $cep ] )->layout = ['col-sm-2 control-label', 'col-sm-4'];
-        $this->form->addFields( [ new TLabel('endereco') ], [ $endereco ], [ new TLabel('Numero') ], [ $numero ] );
-        $this->form->addFields( [ new TLabel('Bairro') ], [ $bairro ] );
+        $this->form->addFields( [ new TLabel('Endereço') ], [ $endereco ]);
+        $this->form->addFields(  [ new TLabel('Numero') ], [ $numero ], [ new TLabel('Bairro') ], [ $bairro ] );
         $this->form->addFields( [ new TLabel('Estado') ], [$estado_id], [ new TLabel('Cidade') ], [ $cidade_id ] );
+        
+        $this->form->addContent( [new TFormSeparator('Dados Complementares')]);
         
         // set sizes
         $id->setSize('100%');
-        $nome->setSize('100%');
-
+        $nome->setSize('100%');        
         $fone1->setSize('100%');
+        $fone2->setSize('100%');
         $email->setSize('100%');
         $cep->setSize('100%');
         $endereco->setSize('100%');
         $numero->setSize('100%');        
         $bairro->setSize('100%');
         $cidade_id->setSize('100%');        
-        $cep->setMask('99.999-999');
+        //$cep->setMask('99999-999');
+        $fone1->setMask('(99) 99999-9999');
+        $fone2->setMask('(99) 99999-9999');
         
         $id->setEditable(FALSE);
+        $tipo_id->addValidation('Tipo', new TRequiredValidator);
         $nome->addValidation('Nome', new TRequiredValidator);
         $fone1->addValidation('Fone', new TRequiredValidator);
         $email->addValidation('Email', new TRequiredValidator);
@@ -214,51 +222,68 @@ class PessoaForm extends TWindow
      */
     public static function onExitCEP($param)
     {
-        // session_write_close();
+         session_write_close();                                 
         
-        // try
-        // {
-        //     $cep = preg_replace('/[^0-9]/', '', $param['cep']);
-        //     $url = 'https://viacep.com.br/ws/'.$cep.'/json/';
+         try
+         {
+             $cep = preg_replace('/[^0-9]/', '', $param['cep']);
+             $url = 'https://viacep.com.br/ws/'.$cep.'/json/';
+          
+             //$content = @file_get_contents($url);
+             
+             //$content = file_get_contents($url);
+
+            //var_dump(error_get_last());
             
-        //     $content = @file_get_contents($url);
+            $ch = curl_init();
+
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_TIMEOUT => 10
+            ]);
             
-        //     if ($content !== false)
-        //     {
-        //         $cep_data = json_decode($content);
+            $content = curl_exec($ch);
+            
+            curl_close($ch);                                    
+            
+             if ($content !== false)
+             {
+                 $cep_data = json_decode($content);
                 
-        //         $data = new stdClass;
-        //         if (is_object($cep_data) && empty($cep_data->erro))
-        //         {
-        //             TTransaction::open('ong');
-        //             $estado = Estado::where('uf', '=', $cep_data->uf)->first();
-        //             $cidade = Cidade::where('codigo_ibge', '=', $cep_data->ibge)->first();
-        //             TTransaction::close();
+                 $data = new stdClass;
+                 if (is_object($cep_data) && empty($cep_data->erro))
+                 {
+                     TTransaction::open('ong');
+                     $estado = Estado::where('uf', '=', $cep_data->uf)->first();
+                     $cidade = Cidade::where('codigo_ibge', '=', $cep_data->ibge)->first();
+                     TTransaction::close();
                     
-        //             $data->endereco  = $cep_data->endereco;
-        //             $data->complemento = $cep_data->complemento;
-        //             $data->bairro      = $cep_data->bairro;
-        //             $data->estado_id   = $estado->id ?? '';
-        //             $data->cidade_id   = $cidade->id ?? '';
+                     $data->endereco  = $cep_data->endereco;
+                     $data->complemento = $cep_data->complemento;
+                     $data->bairro      = $cep_data->bairro;
+                     $data->estado_id   = $estado->id ?? '';
+                     $data->cidade_id   = $cidade->id ?? '';
                     
-        //             TForm::sendData('form_Pessoa', $data, false, true);
-        //         }
-        //         else
-        //         {
-        //             $data->endereco  = '';
-        //             $data->complemento = '';
-        //             $data->bairro      = '';
-        //             $data->estado_id   = '';
-        //             $data->cidade_id   = '';
+                     TForm::sendData('form_Pessoa', $data, false, true);
+                 }
+                 else
+                 {
+                     $data->endereco  = '';
+                     $data->complemento = '';
+                     $data->bairro      = '';
+                     $data->estado_id   = '';
+                     $data->cidade_id   = '';
                     
-        //             TForm::sendData('form_Pessoa', $data, false, true);
-        //         }
-        //     }
-        // }
-        // catch (Exception $e)
-        // {
-        //     new TMessage('error', $e->getMessage());
-        // }
+                     TForm::sendData('form_Pessoa', $data, false, true);
+                 }
+             }
+         }
+         catch (Exception $e)
+         {
+             new TMessage('error', $e->getMessage());
+         }
     }
     
     /**

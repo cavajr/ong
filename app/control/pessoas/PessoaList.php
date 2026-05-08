@@ -37,10 +37,9 @@ class PessoaList extends TPage
         $this->addFilterField('bairro', 'like', 'bairro'); // filterField, operator, formField
         $this->addFilterField('cidade_id', '=', 'cidade_id'); // filterField, operator, formField
         $this->addFilterField('projeto_id', '=', 'projeto_id'); // filterField, operator, formField
-        $this->addFilterField('tipo', 'like', 'tipo'); // filterField, operator, formField
+        $this->addFilterField('tipo_id', 'like', 'tipo'); // filterField, operator, formField
         
-       
-       
+            
        
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Pessoa');
@@ -63,7 +62,7 @@ class PessoaList extends TPage
         $projeto_id->setMinLength(3);
         $projeto_id->setMask('{nome} ({id})');
         
-        $tipo->addItems( ['B' => 'Beneficiários', 'V' => 'Voluntários', '' => 'Ambos'] );
+        $tipo->addItems( ['1' => 'Beneficiários', '2' => 'Voluntários', '' => 'Ambos'] );
         $tipo->setLayout('horizontal');
         
         $date_from->setMask('dd/mm/yyyy');
