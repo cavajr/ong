@@ -38,8 +38,7 @@ class PessoaList extends TPage
         $this->addFilterField('cidade_id', '=', 'cidade_id'); // filterField, operator, formField
         $this->addFilterField('projeto_id', '=', 'projeto_id'); // filterField, operator, formField
         $this->addFilterField('tipo_id', 'like', 'tipo'); // filterField, operator, formField
-        
-            
+                    
        
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Pessoa');

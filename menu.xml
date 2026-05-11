@@ -23,6 +23,26 @@
                 <action>SexoList</action>
                 <icon>fa:angle-right fa-fw</icon>
             </menuitem>           
+            <menuitem label="Moradia">
+                <action>MoradiaList</action>
+                <icon>fa:angle-right fa-fw</icon>
+            </menuitem>           
+            <menuitem label="Estrutura de moradia">
+                <action>EstruturamoradiaList</action>
+                <icon>fa:angle-right fa-fw</icon>
+            </menuitem>           
+            <menuitem label="Tipo de atendimento">
+                <action>TipoatendimentoList</action>
+                <icon>fa:angle-right fa-fw</icon>
+            </menuitem>           
+            <menuitem label="Fonte de renda">
+                <action>FonterendaList</action>
+                <icon>fa:angle-right fa-fw</icon>
+            </menuitem>           
+            <menuitem label="Renda mensal">
+                <action>RendamensalList</action>
+                <icon>fa:angle-right fa-fw</icon>
+            </menuitem>           
         </menu>
     </menuitem>
 

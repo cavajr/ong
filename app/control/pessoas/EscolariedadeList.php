@@ -37,7 +37,7 @@ class EscolariedadeList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Escolariedade');
-        $this->form->setFormTitle('Escolariedade');
+        $this->form->setFormTitle('Escolariedades');
         
 
         // create the form fields

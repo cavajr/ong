@@ -1,15 +1,6 @@
 <?php
-/**
- * CidadeList
- *
- * @version    1.0
- * @package    erphouse
- * @subpackage control
- * @author     Pablo Dall'Oglio
- * @copyright  Copyright (c) 2006 Adianti Solutions Ltd. (http://www.adianti.com.br)
- * @license    http://www.adianti.com.br/framework-license
- */
-class CidadeList extends TPage
+
+class RendamensalList extends TPage
 {
     protected $form;     // registration form
     protected $datagrid; // listing
@@ -27,43 +18,31 @@ class CidadeList extends TPage
         parent::__construct();
         
         $this->setDatabase('ong');            // defines the database
-        $this->setActiveRecord('Cidade');   // defines the active record
+        $this->setActiveRecord('Rendamensal');   // defines the active record
         $this->setDefaultOrder('id', 'asc');         // defines the default order
-        $this->setOrderCommand('estado->nome', '(SELECT nome from estado where id=cidade.estado_id)');
         $this->setLimit(10);
         // $this->setCriteria($criteria) // define a standard filter
 
-        $this->addFilterField('id', '=', 'id'); // filterField, operator, formField
+        $this->addFilterField('id', '=', 'id'); // filterField, operator, formField        
         $this->addFilterField('nome', 'like', 'nome'); // filterField, operator, formField
-        $this->addFilterField('codigo_ibge', 'like', 'codigo_ibge'); // filterField, operator, formField
-        $this->addFilterField('estado_id', '=', 'estado_id'); // filterField, operator, formField
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_search_Cidade');
-        $this->form->setFormTitle('Cidades');
+        $this->form = new BootstrapFormBuilder('form_search_Rendamensal');
+        $this->form->setFormTitle('Rendas mensais');
         
 
         // create the form fields
-        $id = new TEntry('id');
+        $id = new TEntry('id');        
         $nome = new TEntry('nome');
-        $codigo_ibge = new TEntry('codigo_ibge');
-        $estado_id = new TDBUniqueSearch('estado_id', 'ong', 'Estado', 'id', 'uf');
-        $estado_id->setMinLength(0);
-        $estado_id->setMask('{nome} ({uf})');
+
 
         // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
+        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );        
         $this->form->addFields( [ new TLabel('Nome') ], [ $nome ] );
-        $this->form->addFields( [ new TLabel('Codigo IBGE') ], [ $codigo_ibge ] );
-        $this->form->addFields( [ new TLabel('Estado') ], [ $estado_id ] );
-
 
         // set sizes
-        $id->setSize('100%');
+        $id->setSize('100%');        
         $nome->setSize('100%');
-        $codigo_ibge->setSize('100%');
-        $estado_id->setSize('100%');
-
         
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__.'_filter_data') );
@@ -71,7 +50,7 @@ class CidadeList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['CidadeForm', 'onEdit'], ['register_state' => 'false']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RendamensalForm', 'onEdit'], ['register_state' => 'false']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -81,29 +60,21 @@ class CidadeList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'center', '10%');
+        $column_id = new TDataGridColumn('id', 'Id', 'center', '10%');        
         $column_nome = new TDataGridColumn('nome', 'Nome', 'left');
-        $column_codigo_ibge = new TDataGridColumn('codigo_ibge', 'Codigo IBGE', 'left');
-        $column_estado_id = new TDataGridColumn('{estado->nome} ({estado->uf})', 'Estado', 'left');
 
-        $column_codigo_ibge->enableAutoHide(500);
-        $column_estado_id->enableAutoHide(500);
-        
+
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
+        $this->datagrid->addColumn($column_id);        
         $this->datagrid->addColumn($column_nome);
-        $this->datagrid->addColumn($column_codigo_ibge);
-        $this->datagrid->addColumn($column_estado_id);
 
 
         // creates the datagrid column actions
-        $column_id->setAction(new TAction([$this, 'onReload']), ['order' => 'id']);
+        $column_id->setAction(new TAction([$this, 'onReload']), ['order' => 'id']);        
         $column_nome->setAction(new TAction([$this, 'onReload']), ['order' => 'nome']);
-        $column_codigo_ibge->setAction(new TAction([$this, 'onReload']), ['order' => 'codigo_ibge']);
-        $column_estado_id->setAction(new TAction([$this, 'onReload']), ['order' => 'estado->nome']);
 
         
-        $action1 = new TDataGridAction(['CidadeForm', 'onEdit'], ['id'=>'{id}', 'register_state' => 'false']);
+        $action1 = new TDataGridAction(['RendamensalForm', 'onEdit'], ['id'=>'{id}', 'register_state' => 'false']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');

@@ -38,7 +38,7 @@ class EstadoList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Estado');
-        $this->form->setFormTitle('Estado');
+        $this->form->setFormTitle('Estados');
         
 
         // create the form fields

@@ -37,7 +37,7 @@ class SexoList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Sexo');
-        $this->form->setFormTitle('Sexo');
+        $this->form->setFormTitle('Sexos');
         
 
         // create the form fields

@@ -3,9 +3,9 @@
  * Estado Active Record
  * @author  <your-name-here>
  */
-class Tipo extends TRecord
+class Tipoatendimento extends TRecord
 {
-    const TABLENAME = 'tipo';
+    const TABLENAME = 'tipoatendimento';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
