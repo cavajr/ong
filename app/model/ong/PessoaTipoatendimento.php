@@ -1,11 +1,11 @@
 <?php
 /**
- * Cidade Active Record
+ * PessoaTipoatendimento Active Record
  * @author  <your-name-here>
  */
-class Escolariedade extends TRecord
+class PessoaTipoatendimento extends TRecord
 {
-    const TABLENAME = 'escolariedade';
+    const TABLENAME = 'pessoa_tipoatendimento';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
@@ -16,7 +16,9 @@ class Escolariedade extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
-        parent::addAttribute('nome');
-    }  
+        parent::addAttribute('pessoa_id');
+        parent::addAttribute('tipoatendimento_id');
+    }
+
 
 }

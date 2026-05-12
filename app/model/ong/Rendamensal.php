@@ -3,9 +3,9 @@
  * Estado Active Record
  * @author  <your-name-here>
  */
-class Estruturamoradia extends TRecord
+class Rendamensal extends TRecord
 {
-    const TABLENAME = 'estruturamoradia';
+    const TABLENAME = 'rendamensal';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
@@ -16,7 +16,7 @@ class Estruturamoradia extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);        
-        parent::addAttribute('nome');
+        parent::addAttribute('nome', function($value) { return !empty($value) ? mb_strtoupper($value, 'UTF-8') : null; }, function($value) { return !empty($value) ? mb_strtoupper($value, 'UTF-8') : null;});
     }
 
 

@@ -37,8 +37,7 @@ class PessoaList extends TPage
         $this->addFilterField('bairro', 'like', 'bairro'); // filterField, operator, formField
         $this->addFilterField('cidade_id', '=', 'cidade_id'); // filterField, operator, formField
         $this->addFilterField('projeto_id', '=', 'projeto_id'); // filterField, operator, formField
-        $this->addFilterField('tipo_id', 'like', 'tipo'); // filterField, operator, formField
-                    
+        $this->addFilterField('tipo_id', '=', 'tipo_id'); // filterField, operator, formField                    
        
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Pessoa');
@@ -51,7 +50,7 @@ class PessoaList extends TPage
         $bairro = new TEntry('bairro');
         $date_from = new TDate('date_from');
         $date_to   = new TDate('date_to');
-        $tipo = new TRadioGroup('tipo');
+        $tipo_id = new TRadioGroup('tipo_id');
         
         $cidade_id = new TDBUniqueSearch('cidade_id', 'ong', 'Cidade', 'id', 'nome');
         $cidade_id->setMinLength(3);
@@ -61,8 +60,8 @@ class PessoaList extends TPage
         $projeto_id->setMinLength(3);
         $projeto_id->setMask('{nome} ({id})');
         
-        $tipo->addItems( ['1' => 'Beneficiários', '2' => 'Voluntários', '' => 'Ambos'] );
-        $tipo->setLayout('horizontal');
+        $tipo_id->addItems( ['1' => 'Beneficiários', '2' => 'Voluntários', '' => 'Ambos'] );
+        $tipo_id->setLayout('horizontal');
         
         $date_from->setMask('dd/mm/yyyy');
         $date_from->setDatabaseMask('yyyy-mm-dd');
@@ -74,7 +73,7 @@ class PessoaList extends TPage
         $this->form->addFields( [ new TLabel('Id') ], [ $id ], [ new TLabel('Nome') ], [ $nome ] );        
         $this->form->addFields( [new TLabel('Dt Cadastro (de)')], [$date_from],
                                 [new TLabel('Dt Cadastro (até)')],   [$date_to] );
-        $this->form->addFields( [ new TLabel('Tipo') ], [ $tipo ], [ new TLabel('Projeto') ], [ $projeto_id ] );    
+        $this->form->addFields( [ new TLabel('Tipo') ], [ $tipo_id ], [ new TLabel('Projeto') ], [ $projeto_id ] );    
         $this->form->addFields(
             [ new TLabel('Bairro') ], [ $bairro ],
             [ new TLabel('Cidade') ], [ $cidade_id ]
@@ -85,7 +84,7 @@ class PessoaList extends TPage
         $date_from->setSize('100%');
         $date_to->setSize('100%');
         $nome->setSize('100%');
-        $tipo->setSize('100%');
+        $tipo_id->setSize('100%');
         $bairro->setSize('100%');
         $cidade_id->setSize('100%');   
         $projeto_id->setSize('100%');           
@@ -112,9 +111,18 @@ class PessoaList extends TPage
         $column_nis = new TDataGridColumn('nis', 'NIS', 'left');
         $column_nome = new TDataGridColumn('nome', 'Nome', 'left');
         $column_bairro = new TDataGridColumn('bairro', 'Bairro', 'left');
-        $column_cidade = new TDataGridColumn('cidade->nome', 'Cidade', 'left');
+        $column_cidade = new TDataGridColumn('{cidade->nome} - {cidade->estado->uf}', 'Cidade', 'left');
         $column_fone = new TDataGridColumn('fone1', 'Fone', 'left');
-        $column_tipo = new TDataGridColumn('tipo', 'Tipo', 'left');
+        $column_tipo = new TDataGridColumn('tipo_id', 'Tipo', 'left');
+        
+        $column_tipo->setTransformer(function($value) {
+            $tipos = [
+                1 => 'Beneficiário',
+                2 => 'Voluntário'
+            ];
+        
+            return $tipos[$value] ?? '';
+        });
         
         $column_fone->enableAutoHide(500);
         $column_bairro->enableAutoHide(500);        
@@ -133,11 +141,11 @@ class PessoaList extends TPage
         $column_nome->setAction(new TAction([$this, 'onReload']), ['order' => 'nome']);
 
         
-        $action1 = new TDataGridAction(['PessoaFormView', 'onEdit'], ['id'=>'{id}', 'register_state' => 'false']);
+        //$action1 = new TDataGridAction(['PessoaFormView', 'onEdit'], ['id'=>'{id}', 'register_state' => 'false']);
         $action2 = new TDataGridAction(['PessoaForm', 'onEdit'], ['id'=>'{id}']);
         $action3 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}', 'register_state' => 'false']);
         
-        $this->datagrid->addAction($action1, _t('View'),   'fa:search gray');
+        //$this->datagrid->addAction($action1, _t('View'),   'fa:search gray');
         $this->datagrid->addAction($action2, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action3 ,_t('Delete'), 'far:trash-alt red');
         

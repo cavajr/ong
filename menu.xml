@@ -46,6 +46,11 @@
         </menu>
     </menuitem>
 
+     <menuitem label="Projetos">
+        <icon>fas:tasks fa-fw</icon>
+        <action>ProjetoList</action>        
+    </menuitem>
+
     <menuitem label="Beneficiários / Voluntários">
         <icon>fas:users fa-fw</icon>
         <action>PessoaList</action>        

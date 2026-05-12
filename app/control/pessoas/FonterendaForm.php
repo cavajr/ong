@@ -45,6 +45,7 @@ class FonterendaForm extends TPage
 
 
         $id->setEditable(FALSE);
+        $nome->style = 'text-transform: uppercase';
         
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
@@ -60,7 +61,7 @@ class FonterendaForm extends TPage
         $container->add($this->form);
         
         parent::add($container);
-    }
+    }        
     
     /**
      * Close side panel

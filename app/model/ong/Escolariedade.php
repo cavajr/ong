@@ -3,9 +3,9 @@
  * Cidade Active Record
  * @author  <your-name-here>
  */
-class Cidade extends TRecord
+class Escolariedade extends TRecord
 {
-    const TABLENAME = 'cidade';
+    const TABLENAME = 'escolariedade';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
@@ -16,14 +16,7 @@ class Cidade extends TRecord
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
         parent::__construct($id, $callObjectLoad);
-        parent::addAttribute('nome');
-        parent::addAttribute('codigo_ibge');
-        parent::addAttribute('estado_id');
-    }
-
-    public function get_estado()
-    {
-        return Estado::find($this->estado_id);
-    }
+        parent::addAttribute('nome', function($value) { return !empty($value) ? mb_strtoupper($value, 'UTF-8') : null; }, function($value) { return !empty($value) ? mb_strtoupper($value, 'UTF-8') : null;});
+    }  
 
 }

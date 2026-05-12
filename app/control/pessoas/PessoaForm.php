@@ -9,7 +9,7 @@
  * @copyright  Copyright (c) 2006 Adianti Solutions Ltd. (http://www.adianti.com.br)
  * @license    http://www.adianti.com.br/framework-license
  */
-class PessoaForm extends TWindow
+class PessoaForm extends TPage
 {
     protected $form; // form
     
@@ -20,20 +20,27 @@ class PessoaForm extends TWindow
     public function __construct( $param )
     {
         parent::__construct();
-        parent::setSize(0.8, null);
-        parent::removePadding();
-        parent::removeTitleBar();
+//         parent::setSize(0.8, null);
+//         parent::removePadding();
+//         parent::removeTitleBar();
         //parent::disableEscape();
+        
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_Pessoa');
         $this->form->setFormTitle('Beneficiário / Voluntário');
-        $this->form->setProperty('style', 'margin:0;border:0');
+        //$this->form->setProperty('style', 'margin:0;border:0');
         $this->form->setClientValidation(true);
+        $this->form->setFieldSizes('100%');
 
         // create the form fields
+        $this->form->appendPage('Dados Gerais');
         $id = new TEntry('id');
+        $cpf = new TEntry('cpf');
+        $nis = new TEntry('nis');
+        $rg = new TEntry('rg');
         $nome = new TEntry('nome');        
+        $indicado_por = new TEntry('indicado_por');
         $fone1 = new TEntry('fone1');
         $fone2 = new TEntry('fone2');
         $email = new TEntry('email');
@@ -41,7 +48,15 @@ class PessoaForm extends TWindow
         $endereco = new TEntry('endereco');
         $numero = new TEntry('numero');        
         $bairro = new TEntry('bairro');
+        $idade = new TEntry('idade');
         $tipo_id = new TDBCombo('tipo_id', 'ong', 'Tipo', 'id', 'nome');
+        $projeto_id = new TDBCombo('projeto_id', 'ong', 'Projeto', 'id', 'nome');
+        
+        
+        $estado_civil_id = new TDBCombo('estado_civil_id', 'ong', 'Estadocivil', 'id', 'nome');
+        $escolariedade_id = new TDBCombo('escolariedade_id', 'ong', 'Escolariedade', 'id', 'nome');
+        $sexo_id = new TDBCombo('sexo_id', 'ong', 'Sexo', 'id', 'nome');
+        $profissao = new TEntry('profissao');
         
         $filter = new TCriteria;
         $filter->add(new TFilter('id', '<', '0'));
@@ -49,41 +64,31 @@ class PessoaForm extends TWindow
         $estado_id = new TDBCombo('estado_id', 'ong', 'Estado', 'id', '{nome} ({uf})');
         
         $estado_id->setChangeAction( new TAction( [$this, 'onChangeEstado'] ) );
-        $cep->setExitAction( new TAction([ $this, 'onExitCEP']) );
+        $tipo_id->setChangeAction(new TAction([$this, 'onChangeTipo']));
+        //$cep->setExitAction( new TAction([ $this, 'onExitCEP']) );
         
         $cidade_id->enableSearch();
         $estado_id->enableSearch();
+        $projeto_id->enableSearch();
         
-        // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ],  [ new TLabel('Tipo') ], [ $tipo_id ]);
-        $this->form->addFields( [ new TLabel('Nome') ], [ $nome ] );
-        $this->form->addFields( [ new TLabel('Fone1') ], [ $fone1 ], [ new TLabel('Fone2') ], [ $fone2 ] );
-        $this->form->addFields( [ new TLabel('E-mail') ], [ $email ] );
-        
-        $this->form->addContent( [new TFormSeparator('Endereço')]);
-        $this->form->addFields( [ new TLabel('Cep') ], [ $cep ] )->layout = ['col-sm-2 control-label', 'col-sm-4'];
-        $this->form->addFields( [ new TLabel('Endereço') ], [ $endereco ]);
-        $this->form->addFields(  [ new TLabel('Numero') ], [ $numero ], [ new TLabel('Bairro') ], [ $bairro ] );
-        $this->form->addFields( [ new TLabel('Estado') ], [$estado_id], [ new TLabel('Cidade') ], [ $cidade_id ] );
-        
-        $this->form->addContent( [new TFormSeparator('Dados Complementares')]);
-        
-        // set sizes
-        $id->setSize('100%');
-        $nome->setSize('100%');        
-        $fone1->setSize('100%');
-        $fone2->setSize('100%');
-        $email->setSize('100%');
-        $cep->setSize('100%');
-        $endereco->setSize('100%');
-        $numero->setSize('100%');        
-        $bairro->setSize('100%');
-        $cidade_id->setSize('100%');        
-        //$cep->setMask('99999-999');
+        $cep->setMask('99999-999');
         $fone1->setMask('(99) 99999-9999');
         $fone2->setMask('(99) 99999-9999');
+        $cpf->setMask('999.999.999-99');
+        $nome->style = 'text-transform: uppercase';
+        $endereco->style = 'text-transform: uppercase';
+        $bairro->style = 'text-transform: uppercase';
+        $profissao->style = 'text-transform: uppercase';
+        $indicado_por->style = 'text-transform: uppercase';
         
         $id->setEditable(FALSE);
+        $sexo_id->addValidation('Sexo', new TRequiredValidator);
+        $escolariedade_id->addValidation('Escolariedade', new TRequiredValidator);
+        $estado_civil_id->addValidation('Estado Civil', new TRequiredValidator);
+        $cpf->addValidation('CPF', new TRequiredValidator);
+        $idade->addValidation('Idade', new TRequiredValidator);
+        $rg->addValidation('RG', new TRequiredValidator);
+        $nis->addValidation('Mis', new TRequiredValidator);
         $tipo_id->addValidation('Tipo', new TRequiredValidator);
         $nome->addValidation('Nome', new TRequiredValidator);
         $fone1->addValidation('Fone', new TRequiredValidator);
@@ -94,11 +99,52 @@ class PessoaForm extends TWindow
         $endereco->addValidation('endereco', new TRequiredValidator);
         $numero->addValidation('Número', new TRequiredValidator);
         
-        // create the form actions
-        $this->form->addHeaderActionLink( _t('Close'),  new TAction([__CLASS__, 'onClose'], ['static'=>'1']), 'fa:times red');
+        // add the fields
+        $row = $this->form->addFields( [ new TLabel('Id'),  $id ],  [ new TLabel('Tipo'),  $tipo_id ], [ new TLabel('Projeto'),  $projeto_id ]);
+        $row->layout = ['col-sm-2', 'col-sm-3',  'col-sm-7' ];
+        
+        $row = $this->form->addFields( [ new TLabel('Nome') ,  $nome ] );
+        $row->layout =['col-sm-12'];
+        
+        $row = $this->form->addFields( [ new TLabel('CPF') ,  $cpf ], [ new TLabel('RG') ,  $rg ], [ new TLabel('Nis') ,  $nis ], [ new TLabel('Idade') ,  $idade ] );
+        $row->layout = ['col-sm-3', 'col-sm-3',  'col-sm-4', 'col-sm-2'];
+        
+        $row = $this->form->addFields( [ new TLabel('Sexo') ,  $sexo_id ], [ new TLabel('Escolariedade') ,  $escolariedade_id ], [ new TLabel('Estado Civil') ,  $estado_civil_id ] );
+        $row->layout = ['col-sm-3', 'col-sm-5',  'col-sm-4' ];
+        
+        $row = $this->form->addFields( [ new TLabel('Profissão') , $profissao ], [ new TLabel('Fone1') , $fone1 ], [ new TLabel('Fone2') ,  $fone2 ], [ new TLabel('E-mail') , $email ]  );
+        $row->layout = ['col-sm-4', 'col-sm-2', 'col-sm-2', 'col-sm-4' ];                     
+        
+        $this->form->addContent( [new TFormSeparator('Endereço')]);
+        
+        $this->form->addFields( [ new TLabel('Cep') , $cep ] )->layout = ['col-sm-2'];
+        $this->form->addFields( [ new TLabel('Endereço') ,  $endereco ])->layout = ['col-sm-12'];
+        $this->form->addFields( [ new TLabel('Numero') ,  $numero ], [ new TLabel('Bairro'), $bairro ], [ new TLabel('UF') , $estado_id ])->layout = ['col-sm-2', 'col-sm-7', 'col-sm-3'];        
+        $this->form->addFields( [ new TLabel('Cidade'), $cidade_id ] )->layout = ['col-sm-12'];
+        
+        $this->form->addContent( [new TFormSeparator('Indicação')]);
+        $this->form->addFields( [ new TLabel('Indicado Por') , $indicado_por ] )->layout = ['col-sm-12'];
+        
+        $this->form->appendPage('Dados Complementares');                
+        $fonterenda_id = new TDBCombo('fonterenda_id', 'ong', 'Fonterenda', 'id', 'nome');
+        $rendamensal_id = new TDBCombo('rendamensal_id', 'ong', 'Rendamensal', 'id', 'nome');
+        $moradia_id = new TDBCombo('moradia_id', 'ong', 'Moradia', 'id', 'nome');
+        $moradores = new TEntry('moradores');
+        
+        $moradores->addValidation('Moradores', new TRequiredValidator);
+        
+        $estruturamoradia_list = new TDBCheckGroup('estruturamoradia_list', 'ong', 'Estruturamoradia', 'id', 'nome');
+        $tipoatendimento_list = new TDBCheckGroup('tipoatendimento_list', 'ong', 'Tipoatendimento', 'id', 'nome');        
+              
+        $this->form->addFields( [ new TLabel('QUAL SUA PRINCIPAL FONTE DE RENDA?') , $fonterenda_id ], [ new TLabel('QUAL A RENDA MENSAL DA FAMILIA?') , $rendamensal_id ] )->layout = ['col-sm-6', 'col-sm-6'];        
+        $this->form->addFields( [ new TLabel('QUANTAS PESSOAS MORAM COM VOCÊ?') , $moradores ], [ new TLabel('A CASA ONDE VOCÊ MORA É?') , $moradia_id ] )->layout = ['col-sm-3', 'col-sm-9'];
+        $this->form->addFields( [ new TLabel('O LUGAR ONDE VOCÊ MORA TEM:') , $estruturamoradia_list ], [ new TLabel('BUSCA ATENDIMENTO PARA:') , $tipoatendimento_list ] )->layout = ['col-sm-3', 'col-sm-9'];
+        
+        // create the form actions        
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
         $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink( 'Listagem', new TAction(['PessoaList', 'onReload']), 'fa:table blue');
         
         // vertical box container
         $container = new TVBox;
@@ -107,6 +153,25 @@ class PessoaForm extends TWindow
         $container->add($this->form);
         
         parent::add($container);
+    }
+    
+    public static function onChangeTipo($param)
+    {
+        if (isset($param['tipo_id']))
+        {
+            if ($param['tipo_id'] == 1)
+            {
+                TScript::create("
+                    $('a:contains(\"Dados Complementares\")').closest('li').show();
+                ");
+            }
+            else
+            {
+                TScript::create("
+                    $('a:contains(\"Dados Complementares\")').closest('li').hide();
+                ");
+            }
+        }
     }
 
     /**
@@ -122,8 +187,60 @@ class PessoaForm extends TWindow
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
             
+            if ($data->tipo_id == 1)
+            {
+                if (empty($data->fonterenda_id))
+                {
+                    throw new Exception('Informe a fonte de renda');
+                }
+            
+                if (empty($data->rendamensal_id))
+                {
+                    throw new Exception('Informe a renda mensal');
+                }
+            
+                if (empty($data->moradia_id))
+                {
+                    throw new Exception('Informe a moradia');
+                }
+            
+                if (empty($data->moradores))
+                {
+                    throw new Exception('Informe quantas pessoas moram com você');
+                }
+            
+                if (empty($data->estruturamoradia_list))
+                {
+                    throw new Exception('Selecione ao menos uma estrutura de moradia');
+                }
+            
+                if (empty($data->tipoatendimento_list))
+                {
+                    throw new Exception('Selecione ao menos um tipo de atendimento');
+                }
+            }
+            
             $object = new Pessoa;  // create an empty object
-            $object->fromArray( (array) $data); // load the object with data
+            $object->fromArray( (array) $data); // load the object with data                       
+            
+            if ( !empty($param['estruturamoradia_list']) )
+            {
+                foreach ($param['estruturamoradia_list'] as $estruturamoradia_id)
+                {
+                    // add the skill to the customer
+                    $object->addEstruturamoradia(new Estruturamoradia($estruturamoradia_id));
+                }
+            }
+            
+            if ( !empty($param['tipoatendimento_list']) )
+            {
+                foreach ($param['tipoatendimento_list'] as $tipoatendimento_id)
+                {
+                    // add the skill to the customer
+                    $object->addTipoatendimento(new Tipoatendimento($tipoatendimento_id));
+                }
+            }
+            
             $object->store(); // save the object                   
             
             // get the generated id
@@ -163,7 +280,33 @@ class PessoaForm extends TWindow
             {
                 $key = $param['key'];
                 TTransaction::open('ong');
-                $object = new Pessoa($key);                           
+                $object = new Pessoa($key);                                         
+                
+                // load the skills (aggregation)
+                $estruturamoradias = $object->getEstruturamoradias();
+                $estruturamoradia_list = array();
+                if ($estruturamoradias)
+                {
+                    foreach ($estruturamoradias as $skill)
+                    {
+                        $estruturamoradia_list[] = $skill->id;
+                    }
+                }
+                $object->estruturamoradia_list = $estruturamoradia_list;
+                
+                
+                // load the tipoatendimento (aggregation)
+                $tipoatendimentos = $object->getTipoatendimentos();
+                $tipoatendimento_list = array();
+                if ($tipoatendimentos)
+                {
+                    foreach ($tipoatendimentos as $skill)
+                    {
+                        $tipoatendimento_list[] = $skill->id;
+                    }
+                }
+                $object->tipoatendimento_list = $tipoatendimento_list;
+                                 
                 
                 $this->form->setData($object);
                 
@@ -201,7 +344,7 @@ class PessoaForm extends TWindow
                 $criteria = TCriteria::create( ['estado_id' => $param['estado_id'] ] );
                 
                 // formname, field, database, model, key, value, ordercolumn = NULL, criteria = NULL, startEmpty = FALSE
-                TDBCombo::reloadFromModel('form_Pessoa', 'cidade_id', 'ong', 'Cidade', 'id', '{nome} ({id})', 'nome', $criteria, TRUE);
+                TDBCombo::reloadFromModel('form_Pessoa', 'cidade_id', 'ong', 'Cidade', 'id', '{nome}', 'nome', $criteria, TRUE);
             }
             else
             {
@@ -286,11 +429,11 @@ class PessoaForm extends TWindow
          }
     }
     
-    /**
-     * Closes window
-     */
-    public static function onClose()
-    {
-        parent::closeWindow();
-    }
+//     /**
+//      * Closes window
+//      */
+//     public static function onClose()
+//     {
+//         parent::closeWindow();
+//     }
 }

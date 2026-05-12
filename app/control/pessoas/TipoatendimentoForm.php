@@ -18,11 +18,11 @@ class TipoatendimentoForm extends TPage
         $this->setAfterSaveAction( new TAction(['TipoatendimentoList', 'onReload'], ['register_state' => 'true']) );
         
         $this->setDatabase('ong');              // defines the database
-        $this->setActiveRecord('Tipo de atendimento');     // defines the active record
+        $this->setActiveRecord('Tipoatendimento');     // defines the active record
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_Tipoatendimento');
-        $this->form->setFormTitle('Tipoatendimento');
+        $this->form->setFormTitle('Tipo de atendimento');
         $this->form->setClientValidation(true);
         $this->form->setColumnClasses( 2, ['col-sm-5 col-lg-4', 'col-sm-7 col-lg-8'] );
         
@@ -45,6 +45,7 @@ class TipoatendimentoForm extends TPage
 
 
         $id->setEditable(FALSE);
+        $nome->style = 'text-transform: uppercase';
         
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');

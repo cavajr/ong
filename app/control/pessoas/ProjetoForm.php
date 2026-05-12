@@ -1,15 +1,6 @@
 <?php
-/**
- * EstadoForm
- *
- * @version    1.0
- * @package    erphouse
- * @subpackage control
- * @author     Pablo Dall'Oglio
- * @copyright  Copyright (c) 2006 Adianti Solutions Ltd. (http://www.adianti.com.br)
- * @license    http://www.adianti.com.br/framework-license
- */
-class EstadoCivilForm extends TPage
+
+class ProjetoForm extends TPage
 {
     protected $form; // form
     
@@ -24,20 +15,20 @@ class EstadoCivilForm extends TPage
         parent::__construct();
         
         parent::setTargetContainer('adianti_right_panel');
-        $this->setAfterSaveAction( new TAction(['EstadoCivilList', 'onReload'], ['register_state' => 'true']) );
+        $this->setAfterSaveAction( new TAction(['ProjetoList', 'onReload'], ['register_state' => 'true']) );
         
         $this->setDatabase('ong');              // defines the database
-        $this->setActiveRecord('EstadoCivil');     // defines the active record
+        $this->setActiveRecord('Projeto');     // defines the active record
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Estado_Civil');
-        $this->form->setFormTitle('EstadoCivil');
+        $this->form = new BootstrapFormBuilder('form_Projeto');
+        $this->form->setFormTitle('Projeto');
         $this->form->setClientValidation(true);
         $this->form->setColumnClasses( 2, ['col-sm-5 col-lg-4', 'col-sm-7 col-lg-8'] );
         
 
         // create the form fields
-        $id = new TEntry('id');
+        $id = new TEntry('id');        
         $nome = new TEntry('nome');
 
 
@@ -49,7 +40,7 @@ class EstadoCivilForm extends TPage
 
 
         // set sizes
-        $id->setSize('100%');
+        $id->setSize('100%');        
         $nome->setSize('100%');
 
 
@@ -70,7 +61,7 @@ class EstadoCivilForm extends TPage
         $container->add($this->form);
         
         parent::add($container);
-    }      
+    }
     
     /**
      * Close side panel
