@@ -53,6 +53,7 @@ class Pessoa extends TRecord
         parent::addAttribute('moradia_id');
         parent::addAttribute('moradores');
         parent::addAttribute('cep');
+        parent::addAttribute('foto');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
